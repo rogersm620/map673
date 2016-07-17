@@ -3,12 +3,14 @@
 
 <head>
     <meta charset=utf-8 />
-    <title>Lab 01 Template</title>
+    <title>Renters</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
 
+    <script src="https://code.jquery.com/jquery-1.12.2.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/1.0.1/simple_statistics.js"></script>
 
-    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/leaflet/0.7.7/leaflet.css" />
     <link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
 
     <style>
@@ -17,35 +19,76 @@
             padding: 0;
             background: whitesmoke;
             font-family: Lato, sans-serif;
-            color: #0D0000;
+            color: black;
         }
         header {
-            width: 960px;
-            margin: 10px 20px 10px 20px;
+            width: 80%;
+            margin: 10px auto 10px auto;
+            background: black;
         }
         h1 {
             display: inline-block;
             margin-right: 20px;
-            color: #001323;
+            color: #74a9cf;
         }
         h2 {
             display: inline-block;
-            color: #001323;
+            color: ghostwhite;
         }
         #map {
-            width: 960px;
+            width: 80%;
             height: 540px;
-            margin: 10px 20px 10px 20px;
+            margin: 10px auto 10px auto;
             background: whitesmoke;
             border: 2px solid #dddedf;
         }
         footer {
-            width: 960px;
-            margin: 10px 20px 10px 20px;
+            width: 80%;
+            margin: 10px auto 10px auto;
+            color: ghostwhite;
         }
         p {
-            font-size: 1em;
+            font-size: .8em;
             color: #001323;
+        }
+        ol {
+            font-size: .8em;
+            color: #001323;
+        }
+        .legend {
+            padding: 6px 8px;
+            font-size: 1em;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .legend h3 {
+            font-size: 1.1 em;
+            font-weight: normal;
+            color: #001323;
+            margin: 0 0 10px 0;
+        }
+        .legend span {
+            width: 20px;
+            height: 20px;
+            float: left;
+            margin: 0 10px 4px 0;
+        }
+        .legend label {
+            font-size: 1.1em;
+        }
+        .legend label:after {
+            content: ' ';
+            display: block;
+            clear: both;
+        }
+        a {
+            color: #045a8d;
+            font-weight: bold;
+            text-decoration: none; 
+        }
+        a:hover {
+            text-decoration: underline;
         }
         
         /* ADD YOUR ADDITIONAL STYLE RULES HERE */
@@ -56,21 +99,134 @@
 <body>
     <header>
         <h1>Map Title</h1>
-        <h2>Map Subtitle</h2>
+        <h2>Percentage of total homes rented in Kentucky</h2>
     </header>
 
     <div id='map'></div>
 
     <footer>
-        <p>Map authored by YOUR NAME</p>
-        <p>Additional information about the data and map goes here.</p>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis urna magna, maximus nec laoreet sit amet, dictum ultricies nibh. Ut id auctor lacus. Nam a dolor et justo luctus luctus. Duis a elit eget risus dictum vehicula id eu elit. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Sed sed enim nisl. Vestibulum commodo imperdiet lacus, sed facilisis erat placerat sit amet. Nulla consequat malesuada neque eget aliquet. Integer non convallis nisl, gravida ultrices ex. Fusce nec vestibulum elit. Sed elementum lectus ipsum, vulputate elementum ex laoreet a. Aenean eu ex varius, varius felis vitae, efficitur nulla. Quisque pretium laoreet ante, in sodales dui vehicula at. Mauris eu sem sapien.
-        </p>
+        <p>Map authored by Ryan Rogers, 2016.</p>
+        <p>Map data obtainted through <a href="http://factfinder.census.gov">American Fact Finder</a>, from the 2010 U.S. Census.</p>
+        <ol type= "1">
+        <li>The purpose of this map is to show housing trends (specifically the percentage of the population that rents their home) in the state of Kentucky.</li>
+        <li>The design of the map both sets the tone, and determines the data presented, thus influencing how the map reader interprets the information presented. For instance, by simply adjusting the class breaks of the data presented, a cartographer can emphasize (or de-emphasize) how widespread the subject being mapped is (in this case renters). The maker can also present (or not) other data to compare and contrast with the subject of the map. Even color palette has a subtle affect on how presented data is interpreted. </li>
+        <li>This map, like all maps, was designed with a specific goal in mind, and therefore does have a specific point of view. This map was designed, specifically to show the percentage of renters living in counties across Kentucky. The class breaks chosen for the Chloropleth design were done so to emphasize renting populations, with more urbanized counties (often with larger renting populations) sticking out. While this design is striking, it's worth noting that if you click on the darker (more renters) counties, the popup will show that no more than 42% or a county consist of renters. This is a perfect example of the point of view taken by the map. </li>
+        </ol>
+        
+        
     </footer>
 
     <script>
         
-        // WRITE YOUR CODE JAVASCRIPT CODE HERE
+        jQuery("h1").html("Renters");
+        
+        var options = {
+            center: [37.8, -85.8],
+            zoom: 7.4,
+            zoomControl: false
+        };
+        var map = L.map('map', options);
+                map.addControl( L.control.zoom({ position: 'topright'}));
+            
+        
+        var dataLayer,
+            attribute = "RENTER",
+            norm = "TOTAL",
+            name = "NAME";
+        
+        jQuery.getJSON("ky_counties_housing.json", function(data) {
+            //the data loaded from the file is accessible here within this function scope
+            
+            dataLayer = L.geoJson(data, {
+                style: function(feature) {
+                return {
+                    color: '#dddddd',
+                    weight: 1,
+                    fillOpacity: 1,
+                    fillColor: '#1f78b4'
+            };
+            },
+                onEachFeature: function(feature, layer){
+						layer.bindPopup("<b>"+feature.properties[name]+" County</b><br> Renters: "+((feature.properties[attribute]/
+                            feature.properties[norm])*100).toLocaleString()+"%");
+							}
+            }).addTo(map);
+            
+        
+            
+            function drawMap() {
+                var breaks = getClassBreaks();
+            dataLayer.eachLayer(function(layer) {
+                layer.setStyle({ 
+                    fillColor: getColor(layer.feature.properties[attribute]/layer.feature.properties[norm], breaks) } );
+                
+            });
+                drawLegend(breaks);
+            
+        } //end drawMap()
+            
+            drawMap();
+            
+            
+            function getClassBreaks() {
+                var values = []; //empty array for storing values
+                
+                //loop through counties
+                dataLayer.eachLayer(function(layer) {
+                    var value = layer.feature.properties[attribute]/layer.feature.properties[norm];
+                    values.push(value); //push normalized value for each layer into array
+                });
+                
+                var clusters = ss.ckmeans(values, 5); //determine similar clusters
+                
+                //create an array of the lowest value within each cluster
+                var breaks = clusters.map(function(cluster){
+                    return [cluster[0], cluster.pop()];
+                });
+                return breaks; //function returns array of class breaks
+                
+        } // end getClassBreaks()
+            
+            function getColor(d, breaks) {
+                if(d <= breaks[0][1]) {
+                    return '#f1eef6';
+                } else if(d <= breaks [1][1]) {
+                    return '#bdc9e1';
+                } else if(d <= breaks[2][1]) {
+                    return '#74a9cf';
+                } else if(d <= breaks[3][1]) {
+                    return '#2b8cbe'
+                } else if(d <= breaks[4][1]) {
+                    return '#045a8d'
+                }}
+            
+            function drawLegend(breaks) {
+                var legend = L.control({position: 'topleft'}); //create new Leaflet control object
+                
+                legend.onAdd = function() { //when the legend is added to map
+                    var div = L.DomUtil.create('div', 'legend'); //creat a new HTML element, class named legend
+                    div.innerHTML = "<h3>" + attribute + " per " + norm + "</h3>";
+                    for (var i = 0; i < breaks.length; i++) { //for each break
+                        var color = getColor(breaks[i][0], breaks); //determine color for break value, including lower range value
+                        div.innerHTML +=
+                            '<span style="background:' + color + '"></span>' +
+                            '<label>'+(breaks[i][0]*100).toLocaleString() + ' &mdash; ' +
+                            (breaks[i][1]*100).toLocaleString() + '</label>';
+                    };
+                    
+                    return div; //return populated div to map
+                }; //end onAdd method
+                
+                legend.addTo(map); //add the legend to the map
+                
+                
+            };
+            
+    });
+    
+        //data variable is not accessible here
+        
+        
 
     </script>
     
