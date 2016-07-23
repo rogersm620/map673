@@ -30,6 +30,7 @@
             display: inline-block;
             margin-right: 20px;
             color: #74a9cf;
+            padding-left: 15px;
         }
         h2 {
             display: inline-block;
@@ -54,6 +55,8 @@
         ol {
             font-size: .8em;
             color: #001323;
+            max-width: 600px;
+            padding-left: 15px;
         }
         .legend {
             padding: 6px 8px;
@@ -116,119 +119,123 @@
         
     </footer>
 
-    <script>
-        
-        jQuery("h1").html("Renters");
-        
-        var options = {
-            center: [37.8, -85.8],
-            zoom: 7.4,
-            zoomControl: false
-        };
-        var map = L.map('map', options);
-                map.addControl( L.control.zoom({ position: 'topright'}));
-            
-        
-        var dataLayer,
-            attribute = "RENTER",
-            norm = "TOTAL",
-            name = "NAME";
-        
-        jQuery.getJSON("ky_counties_housing.json", function(data) {
-            //the data loaded from the file is accessible here within this function scope
-            
-            dataLayer = L.geoJson(data, {
-                style: function(feature) {
+<script>
+
+    jQuery("h1").html("Renters");
+
+    var options = {
+        center: [37.8, -85.8],
+        zoom: 7.4,
+        zoomControl: false
+    };
+    var map = L.map('map', options);
+            map.addControl( L.control.zoom({ position: 'topright'}));
+
+
+    var dataLayer,
+        attribute = "RENTER",
+        norm = "TOTAL",
+        name = "NAME";
+
+    jQuery.getJSON("ky_counties_housing.json", function(data) {
+        //the data loaded from the file is accessible here within this function scope
+
+        dataLayer = L.geoJson(data, {
+            style: function(feature) {
                 return {
                     color: '#dddddd',
                     weight: 1,
                     fillOpacity: 1,
                     fillColor: '#1f78b4'
-            };
+                };
             },
-                onEachFeature: function(feature, layer){
-						layer.bindPopup("<b>"+feature.properties[name]+" County</b><br> Renters: "+((feature.properties[attribute]/
-                            feature.properties[norm])*100).toLocaleString()+"%");
-							}
-            }).addTo(map);
+            onEachFeature: function(feature, layer){
+                layer.bindPopup("<b>"+feature.properties[name] + 
+                                " County</b><br> Renters: " +((feature.properties[attribute]/
+                        feature.properties[norm])*100).toLocaleString()+"%");
+            }
+        }).addTo(map);
+
+
+
+        function drawMap() {
             
-        
+            var breaks = getClassBreaks();
             
-            function drawMap() {
-                var breaks = getClassBreaks();
             dataLayer.eachLayer(function(layer) {
                 layer.setStyle({ 
                     fillColor: getColor(layer.feature.properties[attribute]/layer.feature.properties[norm], breaks) } );
-                
-            });
-                drawLegend(breaks);
-            
-        } //end drawMap()
-            
-            drawMap();
-            
-            
-            function getClassBreaks() {
-                var values = []; //empty array for storing values
-                
-                //loop through counties
-                dataLayer.eachLayer(function(layer) {
-                    var value = layer.feature.properties[attribute]/layer.feature.properties[norm];
-                    values.push(value); //push normalized value for each layer into array
-                });
-                
-                var clusters = ss.ckmeans(values, 5); //determine similar clusters
-                
-                //create an array of the lowest value within each cluster
-                var breaks = clusters.map(function(cluster){
-                    return [cluster[0], cluster.pop()];
-                });
-                return breaks; //function returns array of class breaks
-                
-        } // end getClassBreaks()
-            
-            function getColor(d, breaks) {
-                if(d <= breaks[0][1]) {
-                    return '#f1eef6';
-                } else if(d <= breaks [1][1]) {
-                    return '#bdc9e1';
-                } else if(d <= breaks[2][1]) {
-                    return '#74a9cf';
-                } else if(d <= breaks[3][1]) {
-                    return '#2b8cbe'
-                } else if(d <= breaks[4][1]) {
-                    return '#045a8d'
-                }}
-            
-            function drawLegend(breaks) {
-                var legend = L.control({position: 'topleft'}); //create new Leaflet control object
-                
-                legend.onAdd = function() { //when the legend is added to map
-                    var div = L.DomUtil.create('div', 'legend'); //creat a new HTML element, class named legend
-                    div.innerHTML = "<h3>" + attribute + " per " + norm + "</h3>";
-                    for (var i = 0; i < breaks.length; i++) { //for each break
-                        var color = getColor(breaks[i][0], breaks); //determine color for break value, including lower range value
-                        div.innerHTML +=
-                            '<span style="background:' + color + '"></span>' +
-                            '<label>'+(breaks[i][0]*100).toLocaleString() + ' &mdash; ' +
-                            (breaks[i][1]*100).toLocaleString() + '</label>';
-                    };
-                    
-                    return div; //return populated div to map
-                }; //end onAdd method
-                
-                legend.addTo(map); //add the legend to the map
-                
-                
-            };
-            
-    });
-    
-        //data variable is not accessible here
-        
-        
 
-    </script>
+            });
+            
+            drawLegend(breaks);
+
+        } //end drawMap()
+
+        drawMap();
+
+
+        function getClassBreaks() {
+            var values = []; //empty array for storing values
+
+            //loop through counties
+            dataLayer.eachLayer(function(layer) {
+                var value = layer.feature.properties[attribute]/layer.feature.properties[norm];
+                values.push(value); //push normalized value for each layer into array
+            });
+
+            var clusters = ss.ckmeans(values, 5); //determine similar clusters
+
+            //create an array of the lowest value within each cluster
+            var breaks = clusters.map(function(cluster){
+                return [cluster[0], cluster.pop()];
+            });
+            return breaks; //function returns array of class breaks
+
+        } // end getClassBreaks()
+
+        function getColor(d, breaks) {
+            if(d <= breaks[0][1]) {
+                return '#f1eef6';
+            } else if(d <= breaks [1][1]) {
+                return '#bdc9e1';
+            } else if(d <= breaks[2][1]) {
+                return '#74a9cf';
+            } else if(d <= breaks[3][1]) {
+                return '#2b8cbe'
+            } else if(d <= breaks[4][1]) {
+                return '#045a8d'
+            }}
+
+        function drawLegend(breaks) {
+            var legend = L.control({position: 'topleft'}); //create new Leaflet control object
+
+            legend.onAdd = function() { //when the legend is added to map
+                var div = L.DomUtil.create('div', 'legend'); //creat a new HTML element, class named legend
+                div.innerHTML = "<h3>" + attribute + " per " + norm + "</h3>";
+                for (var i = 0; i < breaks.length; i++) { //for each break
+                    var color = getColor(breaks[i][0], breaks); //determine color for break value, including lower range value
+                    div.innerHTML +=
+                        '<span style="background:' + color + '"></span>' +
+                        '<label>'+(breaks[i][0]*100).toLocaleString() + ' &mdash; ' +
+                        (breaks[i][1]*100).toLocaleString() + '</label>';
+                };
+
+                return div; //return populated div to map
+            }; //end onAdd method
+
+            legend.addTo(map); //add the legend to the map
+
+
+        };
+
+});
+
+    //data variable is not accessible here
+
+
+
+</script>
     
 </body>
 
