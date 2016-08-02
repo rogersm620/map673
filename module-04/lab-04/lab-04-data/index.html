@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset=utf-8 />
-    <title>A simple map</title>
+    <title>Kenyan Ministry of Health Facilities</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     
     <script src='https://api.mapbox.com/mapbox.js/v2.4.0/mapbox.js'></script>
@@ -33,15 +33,14 @@
 <script>
     L.mapbox.accessToken = 'pk.eyJ1Ijoicm9nZXJzbTYyMCIsImEiOiJjaXI5cGxkMmUwMTJ5Z2Rua296aTN3NXFuIn0.GteABPXudsE0yuZGP_vquw';
     
-    var map = L.mapbox.map('map', 'mapbox.light', {
+    var map = L.mapbox.map('map', 'mapbox.streets-satellite', {
         center: [-.23, 37.8],
         zoom: 7,
         minZoom: 6,
-        maxZoom: 9,
         maxBounds: L.latLngBounds([-6.22, 27.72],[5.76, 47.83])
     });
     
-    omnivore.csv('kenya_education_2014.csv').addTo(map);
+    omnivore.csv('Health_Facilities.csv').addTo(map);
     
 </script>
 </body>
