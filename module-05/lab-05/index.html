@@ -40,7 +40,68 @@
         maxBounds: L.latLngBounds([-6.22, 27.72],[5.76, 47.83])
     });
     
-    omnivore.csv('Health_Facilities.csv').addTo(map);
+    var clincs = omnivore.csv('Health_Facilities.csv')
+                    .on('ready', function(e) {
+                       var healthData = e.target.toGeoJSON();
+                        
+                        for(var layer in layerInfo) {
+                            sites = L.geoJson(healthData, {
+                                pointToLayer: function(feature, layer) {
+                                return L.circleMarker(layer, commonStyles);
+                            },
+                                filter: function(feature) {
+                                if(feature.properties[layerInfo[layer].facilityType]) {
+                                return feature;
+                                }
+                            },
+                                style: function(features) {
+                                        return {
+                                            color: layerInfo[layer].color,
+                                            fillcolor: layerInfo[layer].color
+                                        }
+                                    }
+                            }).addTo(map);
+        
+        
+                        }
+                        
+                        
+                    })
+                    .on('error', function(e) {
+                        console.log(e.error[0].message);
+                    });
+    
+    var customLayer = L.geoJson(null, {
+                // http://leafletjs.com/reference.html#geojson-style
+            style: function(feature) {
+            return { color: '#f00' };
+            }
+        });
+                // this can be any kind of omnivore layer
+    //var runLayer = omnivore.kml('line.kml', null, customLayer)
+    
+    var healthLayers = {};
+    
+    var commonStyles = {
+        weight: 1,
+        stroke: 1,
+        fillOpacity: .6,
+        radius: 5
+    };
+    
+    var layerInfo = {
+        keph1: {facilityType: "1", color: 'limegreen'},
+        keph2: {facilityType: "2", color: 'pink'},
+        keph3: {facilityType: "3", color: 'yellow'},
+        keph4: {facilityType: "4", color: 'blue'}
+    };
+    
+    
+        
+        
+    
+    
+    
     
 </script>
 </body>
