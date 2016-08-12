@@ -42,30 +42,7 @@
     
     var clincs = omnivore.csv('Health_Facilities.csv')
                     .on('ready', function(e) {
-                       var healthData = e.target.toGeoJSON();
-                        
-                        for(var layer in layerInfo) {
-                            sites = L.geoJson(healthData, {
-                                pointToLayer: function(feature, layer) {
-                                return L.circleMarker(layer, commonStyles);
-                            },
-                                filter: function(feature) {
-                                if(feature.properties[layerInfo[layer].facilityType]) {
-                                return feature;
-                                }
-                            },
-                                style: function(features) {
-                                        return {
-                                            color: layerInfo[layer].color,
-                                            fillcolor: layerInfo[layer].color
-                                        }
-                                    }
-                            }).addTo(map);
-        
-        
-                        }
-                        
-                        
+                        drawMap(e.target.toGeoJSON());  
                     })
                     .on('error', function(e) {
                         console.log(e.error[0].message);
@@ -96,7 +73,31 @@
         keph4: {facilityType: "4", color: 'blue'}
     };
     
-    
+    function drawMap(healthData) {
+        
+        for(var layer in layerInfo) {
+            healthLayers[layer] = L.geoJson(healthData, {
+                pointToLayer: function(feature, layer) {
+                    return L.circleMarker(layer, commonStyles);
+                    },
+                
+                filter: function(feature) {
+                    if(feature.properties[layerInfo[layer].facilityType]) {
+                    return feature;
+                        }
+                    },
+            
+                style: function(features) {
+                    return {
+                        color: layerInfo[layer].color,
+                        fillcolor: layerInfo[layer].color
+                    }
+                }
+            }).addTo(map);
+        
+        
+        }
+    }
         
         
     
