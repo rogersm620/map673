@@ -96,7 +96,7 @@
     a:hover {
         text-decoration: underline;
     }
-    ol {
+    ul {
         font-size: .8em;    
     }
         
@@ -113,12 +113,12 @@
                 <p>Healthcare in Kenya is provided by a collection of organizations including the Ministry of Health (MOH), other public institutions, faith-based missionary organizations, non-governmental organizations (NGOs), and private practice. With the support of private, NGO, and missionary based organizations, the MOH plans to focus on preventative medicine at the community level, developing a robust infrastructure countrywide, improving the quality of service, and providing access to those excluded from health care for financial or other reasons. The MOH has developed the Health Sector Strategic and Investment Plan (KHSSP) to address these needs (now on its second term).</p>
             <h2>Kenya Package for Health (KEPH)</h2>
                 <p>The MOH, as part of the KHSSP II, has integrated all state-run health programs into a single system that attempts to address improvement of health by utilizing a tiered health care delivery system. This plan is referred to as the Kenya Package for Health (KEPH) and has defined the following health care levels:</p>
-                <ol>
-                    <li>KEPH 1 (Community Level): All services most effectively delivered within the community. All non-facility based health services are classified as community level.</li>
-                    <li>KEPH 2 (Primary Care Level): First physical health care facility level. Comprised of dispensaries, health centers, maternity/nursing homes. Most health care needs should be addressed at this level.</li>
-                    <li>KEPH 3 (County Level): First level hospitals, who provided complementary services to KEPH 2 facilities, including inpatient, and other comprehensive services.</li>
-                    <li>KEPH 4 (National Level): Tertiary level hospitals with highly specialized services, including but not limited to surgical, neurology, oncology, and internal medicine.</li>
-                </ol>
+                <ul>
+                    <li>KEPH 4 (Community Level): All services most effectively delivered within the community. All non-facility based health services are classified as community level.</li>
+                    <li>KEPH 3 (Primary Care Level): First physical health care facility level. Comprised of dispensaries, health centers, maternity/nursing homes. Most health care needs should be addressed at this level.</li>
+                    <li>KEPH 2 (County Level): First level hospitals, who provided complementary services to KEPH 2 facilities, including inpatient, and other comprehensive services.</li>
+                    <li>KEPH 1 (National Level): Tertiary level hospitals with highly specialized services, including but not limited to surgical, neurology, oncology, and internal medicine.</li>
+                </ul>
             <h2>About the data</h2>
                 <p>Data was accessed through the <a href="https://www.opendata.go.ke">Kenya OpenData Portal</a>. It was collected as part of the KNBS as part of the Master Facility list of the MOH.</p>
                 <br>
@@ -130,14 +130,14 @@
 <script>
     L.mapbox.accessToken = 'pk.eyJ1Ijoicm9nZXJzbTYyMCIsImEiOiJjaXI5cGxkMmUwMTJ5Z2Rua296aTN3NXFuIn0.GteABPXudsE0yuZGP_vquw';
     
-    var map = L.mapbox.map('map', 'mapbox.streets', {
+    var map = L.mapbox.map('map', 'mapbox.streets', {           //map tiles stuff
         center: [-.23, 37.8],
         zoom: 7,
         minZoom: 6,
         maxBounds: L.latLngBounds([-6.22, 27.72],[5.76, 47.83])
     });
     
-    var clincs = omnivore.csv('Health_Facilities.csv')
+    var clincs = omnivore.csv('Health_Facilities.csv')      //load csv with omnivore  
                     .on('ready', function(e) {
                         drawMap(e.target.toGeoJSON());  
                     })
@@ -152,7 +152,7 @@
             }
         });
                 // this can be any kind of omnivore layer
-    //var runLayer = omnivore.kml('line.kml', null, customLayer)
+    //var runLayer = omnivore.kml('line.kml', null, customLayer)  <---what is this for?
     
     var commonStyles = {
         weight: 1,
@@ -161,63 +161,11 @@
         radius: 5
     };
     
-    function drawMap(healthData) {
+    function drawMap(healthData) {          //markers are opposite description. 
+                                            //issue between data and data description?
+                                            //definently issue with data from report, not code issue 
         
-        var keph1 = L.geoJson(healthData, {
-                pointToLayer: function(feature, layer){
-                    return L.circleMarker(layer, {
-                        color: '#fc8d62',
-                        opacity: .6,
-                        weight: 2,
-                        fillOpacity: .4,
-                        radius: 5
-                    });
-                },
-            
-                filter: function(feature) {
-                if(feature.properties.facilityType == "1") {
-                    return feature;
-                }
-            }
-            }).addTo(map);
-        
-        var keph2 = L.geoJson(healthData, {
-                pointToLayer: function(feature, layer){
-                    return L.circleMarker(layer, {
-                        color: '#8da0cb',
-                        opacity: .6,
-                        weight: 2,
-                        fillOpacity: .4,
-                        radius: 5
-                    });
-                },
-            
-                filter: function(feature) {
-                if(feature.properties.facilityType == "2") {
-                    return feature;
-                }
-            }
-            }).addTo(map);
-        
-        var keph3 = L.geoJson(healthData, {
-                pointToLayer: function(feature, layer){
-                    return L.circleMarker(layer, {
-                        color: '#e78ac3',
-                        opacity: .6,
-                        weight: 2,
-                        fillOpacity: .4,
-                        radius: 5
-                    });
-                },
-            
-                filter: function(feature) {
-                if(feature.properties.facilityType == "3") {
-                    return feature;
-                }
-            }
-            }).addTo(map);
-        
-        var keph4 = L.geoJson(healthData, {
+        var keph4 = L.geoJson(healthData, {     //creates markers
                 pointToLayer: function(feature, layer){
                     return L.circleMarker(layer, {
                         color: '#ffd92f',
@@ -228,24 +176,78 @@
                     });
                 },
             
-                filter: function(feature) {
+                filter: function(feature) {     //filters var results to only level 4
                 if(feature.properties.facilityType == "4") {
                     return feature;
                 }
             }
             }).addTo(map);
         
-        var sourcesLayers = {
+        var keph3 = L.geoJson(healthData, {     //creates markers
+                pointToLayer: function(feature, layer){
+                    return L.circleMarker(layer, {
+                        color: '#e78ac3',
+                        opacity: .6,
+                        weight: 2,
+                        fillOpacity: .4,
+                        radius: 5
+                    });
+                },
+            
+                filter: function(feature) {     //filters var results to only level 3
+                if(feature.properties.facilityType == "3") {
+                    return feature;
+                }
+            }
+            }).addTo(map);
+        
+        var keph2 = L.geoJson(healthData, {     //creates markers
+                pointToLayer: function(feature, layer){
+                    return L.circleMarker(layer, {
+                        color: '#8da0cb',
+                        opacity: .6,
+                        weight: 2,
+                        fillOpacity: .4,
+                        radius: 5
+                    });
+                },
+            
+                filter: function(feature) {     //filters var results to only level 2
+                if(feature.properties.facilityType == "2") {
+                    return feature;
+                }
+            }
+            }).addTo(map);
+        
+        var keph1 = L.geoJson(healthData, {     //creates markers
+                pointToLayer: function(feature, layer){
+                    return L.circleMarker(layer, {
+                        color: '#fc8d62',
+                        opacity: .6,
+                        weight: 2,
+                        fillOpacity: .4,
+                        radius: 5
+                    });
+                },
+            
+                filter: function(feature) {     //filters var results to only level 1
+                if(feature.properties.facilityType == "1") {
+                    return feature;
+                }
+            }
+            }).addTo(map);
+
+        var sourcesLayers = {       //formatting for layer selector
             "<b style='color:#fc8d62'>KEPH 1</>": keph1,
             "<b style='color:#8da0cb'>KEPH 2</>": keph2,
             "<b style='color:#e78ac3'>KEPH 3</>": keph3,
             "<b style='color:#ffd92f; text-shadow: 0px 0px 1px #333;'>KEPH 4</>": keph4
         };
     
-        L.control.layers(null, sourcesLayers, { collapsed:false }).addTo(map);
-        drawInfo();
+        L.control.layers(null, sourcesLayers, { collapsed:false }).addTo(map);      //add layer selector box
+        drawInfo();     //draw info box
         
-        keph1.eachLayer(function(layer) {
+        keph1.eachLayer(function(layer) {           //add info box for each keph level (find better way...)
          
             layer.on('mouseover', function() {      //show info box on mouseover
                 updateInfo(this);
