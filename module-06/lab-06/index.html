@@ -13,22 +13,27 @@
         height: 100%;
         padding: 0;
         margin: 0;
+        background: whitesmoke;
     }
     body {
-         font-family: 'Merriweather', serif;   
+        font-family: 'Merriweather', serif;
+        background: whitesmoke;
     }
-    #infowindow {
+    div.cartodb-tooltip {
         position: absolute;
         right: 15px;
         bottom: 20px;
         padding: 8px 15px;
-        background: whitesmoke;
-        border: 2px solid slategray;
+        background: white;
+        border: 2px solid #b08d67;
         border-radius: 3px;
-        color: slategray;
+        color: #b08d67;
         width: 240px;
-        height: 190px;
-        text-align: left
+        height: 200px;
+        text-align: center;
+    }
+    div.cartodb-tooltip p {
+            background: white;
     }
     #map { 
         position:absolute; 
@@ -36,6 +41,7 @@
         bottom:0;
         right: 0;
         width:67%; 
+        background: whitesmoke;
     }
     #side-panel {
         position: absolute;
@@ -63,6 +69,9 @@
         font-weight: 500;
         font-size: 1.2em;
         text-align: center;
+    }
+    h4 {
+        background: white;    
     }
     #side-panel p {
         margin: 8px 0 4px; 
@@ -96,25 +105,7 @@
     </style>
 </head>
 <body>
-    <script type="infowindow/html" id="infowindow">
-  <div class="cartodb-popup v2">
-    <a href="#close" class="cartodb-popup-close-button close">x</a>
-     <div class="cartodb-popup-content-wrapper">
-       <div class="cartodb-popup-header">
-         <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"></src>
-       </div>
-       <div class="cartodb-popup-content">
-         <h4>Trail Name</h4>
-            <p>{{name}}</p>
-            <h4>Starting City</h4>
-            <p>{{seg_start}}</p>
-            <h4>Ending City</h4>
-            <p>{{seg_end}}</p>
-       </div>
-     </div>
-     <div class="cartodb-popup-tip-container"></div>
-  </div>
-</script>
+    
     
     <div id='side-panel'>
         <h1>The Chisholm Trail (1873)</h1>
@@ -124,6 +115,23 @@
                 <p>Map by Ryan Rogers, 2016.</p>
     </div>
     <div id="map"></div>
+    <div class='cartodb-legend custom'>	
+        <div class="legend-title">Legend</div>
+            <ul>
+	            <li>
+		          <div class="bullet" style="background:#2b4651"></div>
+		              Kansas Pacific Railway
+	            </li>
+                <li>
+		          <div class="bullet" style="background:#457385"></div>
+		              Main Trail
+	            </li>
+                <li>
+		          <div class="bullet" style="background:#7cabbd"></div>
+		              Subsidiary Trail
+	            </li>
+            </ul>
+    </div>
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
     <script type="cartocss/html" id="four-states">
@@ -230,7 +238,19 @@
             ]
         }
         
-        cartodb.createLayer(map, subTrails).addTo(map);
+        cartodb.createLayer(map, subTrails).addTo(map)
+            .on('done', function(layer) {
+            cartodb.vis.Vis.addInfowindow(map, layer.getSubLayer(0), ['name', 'seg_start', 'seg_end']); 
+            layer.setInteraction(true);
+            var sublayer = layer.getSubLayer(0);
+            layer.leafletMap.viz.addOverlay({
+                 type: 'tooltip',
+                 layer: sublayer,
+                 template: '<div class="cartodb-tooltip-content-wrapper"><h4>Trail Name</h4><p>{{name}}</p><h4>Starting City</h4><p>{{seg_start}}</p><h4>Ending City</h4><p>{{seg_end}}</p></div>', 
+                 position: 'bottom|right',
+                 fields: [{ name: 'name' }]
+               }); 
+          })
         
         var main = {
             user_name: 'rogersm620',
@@ -243,13 +263,8 @@
             ]
         }
         
-        cartodb.createLayer(map, main).addTo(map)
-        .on('done', function(layer) {
-                    //get sublayer and set the infowindow
-            var subLayer = layer.getSubLayer(0);
+        cartodb.createLayer(map, main).addTo(map);
             
-            subLayer.infowindow.set('template', $('#infowindow').html());
-        })
         
         var rail = {
             user_name: 'rogersm620',
