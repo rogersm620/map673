@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>673 Module 06 CartoDB Starter Template</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+
+    <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
+    
+    <style>
+    html, body, #map {
+        height: 100%;
+        padding: 0;
+        margin: 0;
+    }
+    body {
+         font-family: 'Merriweather', serif;   
+    }
+    #infowindow {
+        position: absolute;
+        right: 15px;
+        bottom: 20px;
+        padding: 8px 15px;
+        background: whitesmoke;
+        border: 2px solid slategray;
+        border-radius: 3px;
+        color: slategray;
+        width: 240px;
+        height: 190px;
+        text-align: left
+    }
+    #map { 
+        position:absolute; 
+        top:0; 
+        bottom:0;
+        right: 0;
+        width:67%; 
+    }
+    #side-panel {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 33%;
+        background: #b08d67;
+        border-right: 2px solid #b08d67;
+        overflow-y: scroll;
+    }
+    h1 {
+        padding: 8px 25px 8px 15px;
+        margin: 0;
+        background: #b08d67;
+        color: whitesmoke;
+        font-weight: 400;
+        font-size: 2em;
+        text-align: center;
+    }
+    h2 {
+        margin: 0;
+        padding: 8px 25px 8px 15px;
+        color: slategray;
+        font-weight: 500;
+        font-size: 1.2em;
+        text-align: center;
+    }
+    #side-panel p {
+        margin: 8px 0 4px; 
+        padding: 0 25px 0 15px;
+        color: whitesmoke;
+        text-align: left;
+        font-size: .8em; 
+    }
+    #side-panel p:after {
+        content: '';
+        display: block;
+        clear: both;
+    }
+    #side-panel img {
+        float: center;
+        margin: 0 0 15px 15px;
+    }
+    a {
+        color: #1C9976;
+        font-weight: normal;
+        text-decoration: none;
+        font-size: 1em;
+    }
+    a:hover {
+        text-decoration: underline;
+    }
+    ul {
+        font-size: 1em;    
+    }  
+    
+    </style>
+</head>
+<body>
+    <script type="infowindow/html" id="infowindow">
+  <div class="cartodb-popup v2">
+    <a href="#close" class="cartodb-popup-close-button close">x</a>
+     <div class="cartodb-popup-content-wrapper">
+       <div class="cartodb-popup-header">
+         <img style="width: 100%" src="https://cartodb.com/assets/logos/logos_full_cartodb_light.png"></src>
+       </div>
+       <div class="cartodb-popup-content">
+         <h4>Trail Name</h4>
+            <p>{{name}}</p>
+            <h4>Starting City</h4>
+            <p>{{seg_start}}</p>
+            <h4>Ending City</h4>
+            <p>{{seg_end}}</p>
+       </div>
+     </div>
+     <div class="cartodb-popup-tip-container"></div>
+  </div>
+</script>
+    
+    <div id='side-panel'>
+        <h1>The Chisholm Trail (1873)</h1>
+                <p>The Chisholm Trail was a live stock trail that operated from 1867 to 1884. It provided the main route to get longhorn cattle from Texas to the east coast, where they were in high demand, via the Kansas Pacific Railway. During its brief existence, more than five million head of cattle and one million wild mustang horses were moved by the Chisholm Trail.</p>
+                <p>This map was created by georeferencing the map The Old Chisholm Cattle Trail with Subsidiary Trails in Texas 1873 (below), then digitizing individual trails. Trail names, starting, and ending locations (when available) can be found by hovering the cursor over trails.</p>
+                <p><center><img src="images/1873_Map_of_Chisholm_Trail_with_subsidiary_trails_in_Texas2.jpg" alt="oldmap"></center></p>
+                <p>Map by Ryan Rogers, 2016.</p>
+    </div>
+    <div id="map"></div>
+
+    <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <script type="cartocss/html" id="four-states">
+    /** simple visualization */
+
+        #four_states_84{
+            polygon-fill: #229A00;
+            polygon-opacity: 0.1;
+            line-color: #b08d67;
+            line-width: 1.5;
+            line-opacity: 1;
+            [zoom > 6] {
+            polygon-opacity: 0;
+            line-opacity: 1;
+            }
+        }
+    </script>
+    <script type="cartocss/html" id="sub-trails">
+    /** simple visualization */
+
+        #main_and_sub_trails_84{
+            line-color: #7cabbd;
+            line-width: 4;
+            line-opacity: 0.8;
+  
+        }
+    </script>
+    <script type="cartocss/html" id="main">
+    /** simple visualization */
+
+        #main_only{
+            line-color: #457385;
+            line-width: 5;
+            line-opacity: 0.9;
+            }
+    </script>
+    <script type="cartocss/html" id="rail">
+    /** simple visualization */
+
+        #kansas_pacific_rail_84{
+            line-color: #2b4651;
+            line-width: 8;
+            line-opacity: 1;
+            line-dasharray: 7,3;
+            }
+
+        #kansas_pacific_rail_84::labels {
+            text-name: [name];
+            text-face-name: 'Old Standard TT Italic';
+            text-size: 12;
+            text-label-position-tolerance: 0;
+            text-fill: #2b4651;
+            text-halo-fill: #FFFFFF;
+            text-halo-radius: 0.5;
+            text-dy: -10;
+            text-allow-overlap: true;
+            text-placement: point;
+            text-placement-type: dummy;
+            }
+
+        #horizontal_dotted_line{
+            line-color: #2b4651;
+            line-width: 8;
+            line-opacity: 1;
+            line-dasharray: 7,3;
+            }
+    </script>
+    
+    <script>
+        
+        var baseLayer = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, &copy; <a href="https://carto.com/attributions">CARTO</a>' });  
+        
+        var map = L.map('map', { 
+            scrollWheelZoom: false, 
+            center: [35, -99.4], 
+            zoom: 5 
+        });  
+        
+        map.addLayer(baseLayer);
+        
+        var layerUrl = 'https://rogersm620.carto.com/api/v2/viz/39cdf27a-f3ba-11e5-90ba-0e5db1731f59/viz.json'
+        
+        var fourStates = {
+            user_name: 'rogersm620',
+            type: 'cartodb',
+            sublayers: [
+                {
+                    sql: "SELECT * FROM four_states_84",
+                    cartocss: $("#four-states").text()
+                }
+            ]
+        }
+        
+        cartodb.createLayer(map, fourStates).addTo(map);
+        
+        var subTrails = {
+            user_name: 'rogersm620',
+            type: 'cartodb',
+            sublayers: [
+                {
+                    sql: "SELECT * FROM main_and_sub_trails_84",
+                    cartocss: $("#sub-trails").text()
+                }
+            ]
+        }
+        
+        cartodb.createLayer(map, subTrails).addTo(map);
+        
+        var main = {
+            user_name: 'rogersm620',
+            type: 'cartodb',
+            sublayers: [
+                {
+                    sql: "SELECT * FROM main_only",
+                    cartocss: $("#main").text()
+                }
+            ]
+        }
+        
+        cartodb.createLayer(map, main).addTo(map)
+        .on('done', function(layer) {
+                    //get sublayer and set the infowindow
+            var subLayer = layer.getSubLayer(0);
+            
+            subLayer.infowindow.set('template', $('#infowindow').html());
+        })
+        
+        var rail = {
+            user_name: 'rogersm620',
+            type: 'cartodb',
+            sublayers: [
+                {
+                    sql: "SELECT * FROM kansas_pacific_rail_84",
+                    cartocss: $("#rail").text()
+                }
+            ]
+        }
+        
+        cartodb.createLayer(map, rail).addTo(map);
+
+            
+        
+
+    </script>
+</body>
+</html>

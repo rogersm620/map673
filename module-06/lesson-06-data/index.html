@@ -8,11 +8,16 @@
     <link rel="stylesheet" href="http://libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
     
     <style>
-      html, body, #map {
+        html, body, #map {
         height: 100%;
         padding: 0;
         margin: 0;
-      }
+        }
+        #map {
+            background: #3d3d3d;
+            
+        }    
+    
     </style>
 </head>
 <body>
@@ -20,7 +25,75 @@
     <div id="map"></div>
 
     <script src="http://libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+    <script type="cartocss/html" id="counties-styles">
+    
+        /** choropleth visulalization */
+        
+            #uninsured_adults_county {
+                polygon-fill: #F1EEF6;
+                polygon-opacity: 0.8;
+                line-color: #FFF;
+                line-width: 0.5;
+                line-opacity: 1;
+            }
+            #uninsured_adults_county [ uninsured_ <= 42] {
+                polygon-fill: #91003F;
+            }
+            #uninsured_adults_county [ uninsured_ <= 34] {
+                polygon-fill: #CE1256;
+            }
+            #uninsured_adults_county [ uninsured_ <= 29] {
+                polygon-fill: #E7298A;
+            }
+            #uninsured_adults_county [ uninsured_ <= 24] {
+                polygon-fill: #DF65B0;
+            }
+            #uninsured_adults_county [ uninsured_ <= 18] {
+                polygon-fill: #C994C7;
+            }
+            #uninsured_adults_county [ uninsured_ <= 13] {
+                polygon-fill: #D4B9DA;
+            }
+            #uninsured_adults_county [ uninsured_ <= 8] {
+                polygon-fill: #F1EEF6;
+            }
+    </script>
     <script>
+        
+        var map = new L.Map("map", {
+            center: [37.9, -99.4],
+            zoom: 4.5
+        });
+        
+        var cartoCSS = '#uninsured_adults_county{'+
+                        'polygon-fill: #F1EEF6;'+
+                        'polygon-opacity: 0.8;'+
+                        'line-color: #FFF;'+
+                        'line-width: 0.5;'+
+                        'line-opacity: 1;'+
+                        '}';
+        
+        
+        var sourceObject = {
+            user_name: 'rogersm620',
+            type: 'cartodb',
+            sublayers: [
+                {
+                    sql: "SELECT * FROM uninsured_adults_county",
+                    cartocss: $("#counties-styles").text()
+                }
+            ]
+        }
+        
+        cartodb.createLayer(map, sourceObject).addTo(map);
+        
+//        $.getJSON('https://rogersm620.cartodb.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM uninsured_adults_county', function(data) {
+//            console.log(data);      //access to geojson data here
+//            
+//            L.geoJson(data).addTo(map);         //use geoJSON data to make regular leaflet map
+//        });
+            
+        
 
     </script>
 </body>
