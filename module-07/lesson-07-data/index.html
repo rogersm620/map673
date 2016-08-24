@@ -14,10 +14,26 @@
     </style>
 </head>
 <body>
-  
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="us-counties.js"></script>
+    
 <script>
-        
-   // custom JS goes here
+    
+    var width = 900, height = 600;
+    
+    var svg = d3.select( "body" )       //select the document's body
+            .append( "svg" )        //create and append a new svg element to it
+            .attr ( "width", width )       //give the svg width
+            .attr( "height", height );      //give the svg height
+    
+    var projection = d3.geo.albersUsa()     //create a new d3 projection, albers equal area
+            .scale(8000)        //adjust till zoomed properly
+            .translate([width / 2, height / 2]);    //center the svg(0,0 is top, left) 
+    
+    var geoPath = d3.geo.path()     //create a new geo path generator
+        .projection(projection);        //assign the projection we just created to it
+    
  
 </script>
 </body>
