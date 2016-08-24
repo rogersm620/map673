@@ -1,0 +1,86 @@
+body { 
+    margin:0;
+    padding:0;
+    background: whitesmoke;
+    font-family: "Work Sans", sans-serif; 
+}
+#map { 
+    position:absolute; 
+    top:0; 
+    bottom:0;
+    right: 0;
+    width:67%; 
+}
+.info {
+    position: absolute;
+    right: 15px;
+    bottom: 20px;
+    padding: 8px 15px;
+    background: whitesmoke;
+    border: 2px solid slategray;
+    border-radius: 3px;
+    color: slategray;
+    width: 240px;
+    height: 190px;
+    text-align: left
+}
+.info h3 {
+    text-align: center;
+    font-weight: 500;
+    margin: 10px 0 20px;
+}
+#side-panel {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 33%;
+    background: whitesmoke;
+    border-right: 2px solid slategray;
+    overflow-y: scroll;
+}
+h1 {
+    padding: 8px 25px 8px 15px;
+    margin: 0;
+    background: slategray;
+    color: whitesmoke;
+    font-weight: 400;
+    font-size: 1.5em;
+    text-align: center;
+}
+h2 {
+    margin: 0;
+    padding: 8px 25px 8px 15px;
+    color: slategray;
+    font-weight: 500;
+    font-size: 1.2em;
+    text-align: center;
+}
+#side-panel p {
+    margin: 8px 0 4px; 
+    padding: 0 25px 0 15px;
+    color: #3d3d3d;
+    text-align: left;
+    font-size: .8em; 
+}
+#side-panel p:after {
+    content: '';
+    display: block;
+    clear: both;
+}
+#side-panel img {
+    float: center;
+    margin: 0 0 15px 15px;
+}
+a {
+    color: #1C9976;
+    font-weight: normal;
+    text-decoration: none;
+    font-size: .8;
+}
+a:hover {
+    text-decoration: underline;
+}
+ul {
+    font-size: .8em;    
+}
