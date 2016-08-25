@@ -11,29 +11,111 @@
             background: whitesmoke;
             font-family: Montserrat, sans-serif;
         }
+        .county {
+            stroke: #fff;
+            fill: #005DAA;
+        }
+        .hover {
+            fill: yellow;
+        }
+        h1, h2 {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+            font-size: 2em;
+            font-weight: 100;
+            color: #005DAA;
+        }
+        H2 {
+            top: 60px;
+            font-size: 1.2em;
+        }
+        #map {
+            width: 900px;
+            height: 600px;
+            margin: 10px auto;
+            border: 1px solid #d3d3d3;
+        }
+        .land {
+            fill: #d3d3d3;
+        }
     </style>
 </head>
 <body>
+    <h1>US Counties</h1>
+    <h2></h2>
+    <div id="map"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-<script src="us-counties.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+
     
 <script>
     
     var width = 900, height = 600;
     
-    var svg = d3.select( "body" )       //select the document's body
+    var svg = d3.select( "#map" )       //select the document's body
             .append( "svg" )        //create and append a new svg element to it
             .attr ( "width", width )       //give the svg width
             .attr( "height", height );      //give the svg height
     
     var projection = d3.geo.albersUsa()     //create a new d3 projection, albers equal area
-            .scale(8000)        //adjust till zoomed properly
+            .scale(1000)        //adjust till zoomed properly
             .translate([width / 2, height / 2]);    //center the svg(0,0 is top, left) 
     
     var geoPath = d3.geo.path()     //create a new geo path generator
         .projection(projection);        //assign the projection we just created to it
     
+    queue()
+        .defer(d3.json, 'us-counties-topo.json')
+        .defer(d3.json, 'na_land_clipped.json')
+        .defer(d3.csv, 'direct-emitters.csv')
+        .await(makeMap);        //finish loading then make map
+    
+    console.log(emitters);
+    
+    function makeMap(error, counties, na, emitters){
+    
+        svg.append("g")
+            .selectAll("path")
+            .data(na.features)
+            .enter()
+            .append("path")
+            .attr("d", geoPath)
+            .attr("class", "land");
+        
+        svg.append("g")     //create and append a new SVG 'g' element to the svg
+            .selectAll("path")      //selectAll the path features that haven't been created yet
+            .data( topojson.feature(counties, counties.objects.counties).features)        //bind the GeoJSON features data to them
+            .enter()        //prepare to...
+            .append("path")     //append the newly created path elements to the 'g'
+            .attr( "d", geoPath )        //define the screen coordinates of the new path
+            .attr("class", "county")        //give each a class name of 'county'
+            .on("mouseover", function(d){
+                d3.select("h2").text(d.properties.NAME + ' county');
+                d3.select(this).attr("class", "county hover");
+            })
+            .on("mouseout", function(d){
+                d3.select("h2").text("");
+                d3.select(this).attr("class", "county");
+            });
+        
+        svg.append("g")
+            .selectAll("circle")
+            .data(emitters)
+            .enter()
+            .append("cirlcle")
+            .attr("cx", function(d) {
+                d.position = projection([d.lon, d.lat])
+                return d.position[0];
+            })
+            .attr("cy", function(d) {
+                return d.position[1];
+            })
+            .attr("r", 1)
+            .attr("class", "emitter");
+    }
  
 </script>
 </body>
