@@ -73,7 +73,7 @@
         .defer(d3.csv, 'direct-emitters.csv')
         .await(makeMap);        //finish loading then make map
     
-    console.log(emitters);
+    //console.log(emitters);
     
     function makeMap(error, counties, na, emitters){
     
@@ -105,13 +105,23 @@
             .selectAll("circle")
             .data(emitters)
             .enter()
-            .append("cirlcle")
+            .append("circle")
             .attr("cx", function(d) {
-                d.position = projection([d.lon, d.lat])
-                return d.position[0];
+                try{
+                    d.position = projection([d.lon, d.lat])
+                    return d.position[0];
+                } catch(e) {
+                    console.log(e,d)
+                }
+
             })
             .attr("cy", function(d) {
-                return d.position[1];
+                try{
+                    d.position = projection([d.lon, d.lat])
+                    return d.position[1];
+                } catch(e) {
+                    console.log(e,d)
+                }
             })
             .attr("r", 1)
             .attr("class", "emitter");
