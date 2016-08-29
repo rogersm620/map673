@@ -1,0 +1,102 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Map 673 Lesson 07 Template</title>
+
+    <link href="http://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet" type="text/css">
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            background: whitesmoke;
+            font-family: Montserrat, sans-serif;
+        }
+        .county {
+            stroke: #fff;
+            fill: #005DAA;
+        }
+        .hover {
+            fill: yellow;
+        }
+        h1, h2 {
+            position: absolute;
+            left: 20px;
+            top: 10px;
+            font-size: 2em;
+            font-weight: 100;
+            color: #005DAA;
+        }
+        H2 {
+            top: 60px;
+            font-size: 1.2em;
+        }
+        #map {
+            width: 900px;
+            height: 600px;
+            margin: 10px auto;
+            border: 1px solid #d3d3d3;
+        }
+        .land {
+            fill: #d3d3d3;
+        }
+        
+    </style>
+</head>
+<body>
+    <h1>The Uninsured</h1>
+    <h2></h2>
+    <div id="map"></div>
+    
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/queue-async/1.0.7/queue.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/1.6.19/topojson.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/simple-statistics/0.9.0/simple_statistics.min.js"></script>
+
+    
+<script>
+    
+    
+    
+    queue()
+        .defer(d3.json, 'https://rogersm620.cartodb.com/api/v2/sql?format=GeoJSON&q=SELECT * FROM uninsured_adults_county')
+        .defer(d3.json, 'na_land_clipped.json')
+        .await(makeMap);        //finish loading then make map
+
+    
+    function makeMap(error, counties, na){
+    
+        svg.append("g")
+            .selectAll("path")
+            .data(counties.features)
+            .enter()
+            .append("path")
+            .attr( "d", geoPath )
+            .attr("class", "county")
+            .attr( "fill", function(d) {
+                //return color based on attr value
+                return jenks(d.properties.uninsured);      //temp value
+        });
+        
+        var breaks = ss.jenks(counties.features.map(function(d) {
+            return d. properties.uninsured;
+        }), 5);
+        
+        breaks.shift();     //remove min value from breaks array before applying to domain
+        breaks.pop();       //same for max
+        
+        console.log(breaks);
+        
+        var colors = ["#feedde","#fdbe85","#fd8d3c","#e6550d","#a63603"];
+        
+        var jenks = d3.scale.threshold()
+            .domain(breaks)
+            .range(colors);
+        
+        
+        
+    }
+ 
+</script>
+</body>
+</html>

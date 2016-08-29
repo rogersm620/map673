@@ -25,3 +25,29 @@ A user wants to go paddling on one of the Texas Paddling Trails. They load their
 4. The map will also utilize HTML, CSS, and possibly an HTML Geolocation API. OpenStreetMap base map tiles will be used.
 5. The map will be hosted on GitHub or a current SquareSpace account and accessed through the domain campfiremapping.com (this domain currently points to my MAP 672 portfolio).
  
+ **Thematic Representation**
+ 
+ Map will consist of dots representing put-in and take-out points, and lines representing the paddling trails. Paddling trails will be stylized to stand out from the rivers drawn on the base map tiles.
+ 
+ **Content**
+ 
+ 1. Paddling trails will be displayed in line form.
+ 2. Put-in and Take-out points will be displayed as circles/dots.
+ 3. A base map displaying major roads and waterways will be used to give reference.
+ 4. Trail name, distance, and put-in/take-out points will display in a info box.
+ 5. "Find Closest" button will use geolocation to select closest trail.
+ 
+ **Functional Requirements**
+ 
+ 1. Put-in/take-out data will load data from a CSV.
+ 2. Paddling trail data will load from a GeoJSON.
+ 3. Data layers will load above base map tiles.
+ 4. User location data will be pulled from browser using HTML5 geolocation, when clicked, and identify closest trail and pop up info for it.
+ 5. Trail information will load into popup box when trail is selected (see drawing below).
+ 
+ **Anticipated User Interaction**
+ 
+ This map will be designed to be interacted with by mobile device ("mobile first"). Interactions will be kept simple, with few options. The map will be touch interface friendly; pinch/zoom navigation will be enabled, and trail data will be available via click rather than with hover function. Buttons will be large enough to be touched, rather using a mouse pointer. Map bounds will be set to Texas borders. Every effort will be made to reduce file size to increase loading speed and be "data friendly" for mobile users.
+ 
+ **Drawings**
+ [paper_proto](images/P_20160828_175829.jpg)
