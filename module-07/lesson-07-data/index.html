@@ -73,12 +73,7 @@
         .defer(d3.json, 'na_land_clipped.json')
         .defer(d3.csv, 'direct-emitters.csv')
         .await(makeMap);        //finish loading then make map
-<<<<<<< HEAD
 
-=======
-    
-    //console.log(emitters);
->>>>>>> origin/master
     
     function makeMap(error, counties, na, emitters){
     
@@ -141,7 +136,6 @@
             .enter()
             .append("circle")
             .attr("cx", function(d) {
-<<<<<<< HEAD
                 d.position = projection([d.lon, d.lat])    
                 try{
                     return d.position[0];
@@ -154,23 +148,6 @@
             })
             .attr("r", function(d) {
                 return radius(d.total_emissions)
-=======
-                try{
-                    d.position = projection([d.lon, d.lat])
-                    return d.position[0];
-                } catch(e) {
-                    console.log(e,d)
-                }
-
-            })
-            .attr("cy", function(d) {
-                try{
-                    d.position = projection([d.lon, d.lat])
-                    return d.position[1];
-                } catch(e) {
-                    console.log(e,d)
-                }
->>>>>>> origin/master
             })
             .attr("class", "emitter");
         
